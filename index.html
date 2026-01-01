@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sun-Shade Activity</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Brand Colors: 
+           #1f2a52 (Midnight Blue)
+           #00bec7 (Teal)
+           #d2f0f0 (Light Aqua)
+           #abb5bf (Slate Grey)
+        */
+        :root {
+            --brand-midnight: #1f2a52;
+            --brand-teal: #00bec7;
+            --brand-aqua: #d2f0f0;
+            --brand-slate: #abb5bf;
+            --brand-light-grey: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--brand-light-grey);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(31, 42, 82, 0.1);
+            overflow: hidden;
+            padding: 30px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid var(--brand-aqua);
+        }
+
+        .content-section {
+            width: 100%;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            color: var(--brand-midnight);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .reveal-container-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .reveal-container-wrapper {
+                flex-direction: row;
+            }
+        }
+
+        .reveal-section {
+            flex: 1;
+            border: 2px solid var(--brand-midnight);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header-small {
+            background-color: var(--brand-midnight);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 12px 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .reveal-wrapper {
+            position: relative;
+            flex-grow: 1;
+            min-height: 250px;
+            background-color: var(--brand-light-grey);
+        }
+
+        .reveal-content {
+            position: absolute;
+            inset: 0;
+            padding: 24px;
+            text-align: left;
+            color: var(--brand-midnight);
+            line-height: 1.6;
+            font-size: 1rem;
+            overflow-y: auto;
+        }
+
+        .reveal-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--brand-aqua);
+            transition: height 0.3s ease-out;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .reveal-cover::after {
+            content: 'PULL DOWN';
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--brand-midnight);
+            opacity: 0.3;
+            letter-spacing: 0.2em;
+        }
+
+        .reveal-handle {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 32px;
+            background-color: var(--brand-teal);
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .reveal-handle:hover {
+            transform: translateX(-50%) scale(1.1);
+            background-color: var(--brand-midnight);
+        }
+
+        .reveal-handle:active {
+            cursor: grabbing;
+        }
+
+        .handle-vertical::before {
+            content: '\25BC';
+            font-size: 0.8rem;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--brand-aqua);
+        }
+
+        .nav-button {
+            background-color: var(--brand-midnight);
+            color: white;
+            font-weight: 700;
+            padding: 12px 28px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background-color: var(--brand-teal);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 190, 199, 0.2);
+        }
+
+        .nav-button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page 1 (Index 0) -->
+        <div id="page-0" class="content-section active">
+            <h2 class="section-title">Sun-Shade Activity</h2>
+            <div class="reveal-container-wrapper">
+                <div class="reveal-section">
+                    <div class="section-header-small">topic 1</div>
+                    <div class="reveal-wrapper">
+                        <div class="reveal-content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        </div>
+                        <div class="reveal-cover" id="cover-0-guidance"></div>
+                        <div class="reveal-handle" id="handle-0-guidance"></div>
+                    </div>
+                </div>
+
+                <div class="reveal-section">
+                    <div class="section-header-small">topic 2</div>
+                    <div class="reveal-wrapper">
+                        <div class="reveal-content">
+                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        </div>
+                        <div class="reveal-cover" id="cover-0-application"></div>
+                        <div class="reveal-handle" id="handle-0-application"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2 (Index 1) -->
+        <div id="page-1" class="content-section">
+            <h2 class="section-title">Sun-Shade Activity</h2>
+            <div class="reveal-container-wrapper">
+                <div class="reveal-section">
+                    <div class="section-header-small">topic 3</div>
+                    <div class="reveal-wrapper">
+                        <div class="reveal-content">
+                            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                        </div>
+                        <div class="reveal-cover" id="cover-1-guidance"></div>
+                        <div class="reveal-handle" id="handle-1-guidance"></div>
+                    </div>
+                </div>
+
+                <div class="reveal-section">
+                    <div class="section-header-small">topic 4</div>
+                    <div class="reveal-wrapper">
+                        <div class="reveal-content">
+                            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+                        </div>
+                        <div class="reveal-cover" id="cover-1-application"></div>
+                        <div class="reveal-handle" id="handle-1-application"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3 (Index 2) -->
+        <div id="page-2" class="content-section">
+            <h2 class="section-title">Sun-Shade Activity</h2>
+            <div class="reveal-container-wrapper">
+                <div class="reveal-section">
+                    <div class="section-header-small">topic 5</div>
+                    <div class="reveal-wrapper">
+                        <div class="reveal-content">
+                            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecat cupidatat non proident.</p>
+                        </div>
+                        <div class="reveal-cover" id="cover-2-guidance"></div>
+                        <div class="reveal-handle" id="handle-2-guidance"></div>
+                    </div>
+                </div>
+
+                <div class="reveal-section">
+                    <div class="section-header-small">topic 6</div>
+                    <div class="reveal-wrapper">
+                        <div class="reveal-content">
+                            <p>Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+                        </div>
+                        <div class="reveal-cover" id="cover-2-application"></div>
+                        <div class="reveal-handle" id="handle-2-application"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation-buttons">
+            <button id="prev-button" class="nav-button">Previous</button>
+            <button id="next-button" class="nav-button">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const pages = document.querySelectorAll('.content-section');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        let currentPageIndex = 0;
+
+        function showPage(index) {
+            pages.forEach((page, i) => {
+                page.classList.remove('active');
+                if (i === index) {
+                    page.classList.add('active');
+                }
+            });
+            updateNavigationButtons();
+            
+            // Re-initialize specific shade sliders for the active page
+            // Logic to find current page's IDs dynamically
+            const guidanceCover = `cover-${index}-guidance`;
+            const guidanceHandle = `handle-${index}-guidance`;
+            const applicationCover = `cover-${index}-application`;
+            const applicationHandle = `handle-${index}-application`;
+            
+            setupRevealSlider(guidanceCover, guidanceHandle);
+            setupRevealSlider(applicationCover, applicationHandle);
+        }
+
+        function updateNavigationButtons() {
+            prevButton.disabled = currentPageIndex === 0;
+            nextButton.disabled = currentPageIndex === pages.length - 1;
+        }
+
+        prevButton.addEventListener('click', () => {
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                showPage(currentPageIndex);
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentPageIndex < pages.length - 1) {
+                currentPageIndex++;
+                showPage(currentPageIndex);
+            }
+        });
+
+        function setupRevealSlider(coverId, handleId) {
+            const cover = document.getElementById(coverId);
+            const handle = document.getElementById(handleId);
+            if (!cover || !handle) return;
+            
+            const wrapper = cover.parentElement;
+
+            let isDragging = false;
+            let initialClientY;
+            let initialHandleTop;
+
+            function resetSlider() {
+                const wrapperHeight = wrapper.offsetHeight;
+                handle.classList.add('handle-vertical');
+                cover.style.top = '0px';
+                cover.style.height = wrapperHeight + 'px';
+                handle.style.top = '0px';
+            }
+
+            // Clean previous listeners
+            const newHandle = handle.cloneNode(true);
+            handle.parentNode.replaceChild(newHandle, handle);
+            const currentHandle = newHandle;
+
+            currentHandle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                initialClientY = e.clientY;
+                initialHandleTop = currentHandle.offsetTop;
+                cover.style.transition = 'none';
+                currentHandle.style.transition = 'none';
+                currentHandle.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            const onMove = (clientY) => {
+                if (!isDragging) return;
+                const handleHeight = currentHandle.offsetHeight;
+                const wrapperHeight = wrapper.offsetHeight;
+                const deltaY = clientY - initialClientY;
+                let newHandleTop = initialHandleTop + deltaY;
+
+                const minTop = 0;
+                const maxTop = wrapperHeight - handleHeight;
+
+                newHandleTop = Math.max(minTop, Math.min(newHandleTop, maxTop));
+                currentHandle.style.top = newHandleTop + 'px';
+
+                const progress = maxTop === 0 ? 0 : newHandleTop / maxTop;
+                cover.style.height = wrapperHeight * (1 - progress) + 'px';
+            };
+
+            const handleMove = (e) => onMove(e.clientY || e.touches[0].clientY);
+
+            document.addEventListener('mousemove', handleMove);
+            document.addEventListener('touchmove', handleMove, { passive: false });
+
+            const stopDrag = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                currentHandle.style.cursor = 'grab';
+                cover.style.transition = 'height 0.3s ease-out';
+                currentHandle.style.transition = 'background-color 0.2s ease, transform 0.2s ease';
+            };
+
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+
+            // Touch start
+            currentHandle.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                initialClientY = e.touches[0].clientY;
+                initialHandleTop = currentHandle.offsetTop;
+                cover.style.transition = 'none';
+                currentHandle.style.transition = 'none';
+                e.preventDefault();
+            });
+
+            resetSlider();
+            window.addEventListener('resize', resetSlider);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage(currentPageIndex);
+        });
+    </script>
+</body>
+</html>
